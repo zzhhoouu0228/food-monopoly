@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>美食大富翁｜經典環狀棋盤版</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- 全螢幕彩帶特效畫布 -->
+    <canvas id="fx-canvas"></canvas>
+
+    <header class="top-bar">
+        <div class="brand">
+            <span class="logo-icon">🎲</span>
+            <h1>美食大富翁</h1>
+        </div>
+        <div class="header-actions">
+            <button id="add-player-btn" class="icon-btn">+ 玩家</button>
+            <button id="reset-btn" class="icon-btn danger">↺ 重置</button>
+        </div>
+    </header>
+
+    <main class="game-layout">
+        <!-- 左側：經典 7x7 環狀大富翁棋盤 -->
+        <section class="board-wrapper">
+            <div class="board" id="board">
+                <!-- 棋盤中央控制台 -->
+                <div class="center-hub">
+                    <div class="board-watermark">美食大富翁</div>
+
+                    <div class="player-turn-bar" id="player-status"></div>
+
+                    <!-- 3D 雙骰區 -->
+                    <div class="dice-stage">
+                        <div class="scene">
+                            <div class="cube" id="cube-1">
+                                <div class="face face-1"><span class="pip"></span></div>
+                                <div class="face face-2"><span class="pip"></span><span class="pip"></span></div>
+                                <div class="face face-3"><span class="pip"></span><span class="pip"></span><span
+                                        class="pip"></span></div>
+                                <div class="face face-4"><span class="pip"></span><span class="pip"></span><span
+                                        class="pip"></span><span class="pip"></span></div>
+                                <div class="face face-5"><span class="pip"></span><span class="pip"></span><span
+                                        class="pip"></span><span class="pip"></span><span class="pip"></span></div>
+                                <div class="face face-6"><span class="pip"></span><span class="pip"></span><span
+                                        class="pip"></span><span class="pip"></span><span class="pip"></span><span
+                                        class="pip"></span></div>
+                            </div>
+                        </div>
+
+                        <div class="scene">
+                            <div class="cube" id="cube-2">
+                                <div class="face face-1"><span class="pip"></span></div>
+                                <div class="face face-2"><span class="pip"></span><span class="pip"></span></div>
+                                <div class="face face-3"><span class="pip"></span><span class="pip"></span><span
+                                        class="pip"></span></div>
+                                <div class="face face-4"><span class="pip"></span><span class="pip"></span><span
+                                        class="pip"></span><span class="pip"></span></div>
+                                <div class="face face-5"><span class="pip"></span><span class="pip"></span><span
+                                        class="pip"></span><span class="pip"></span><span class="pip"></span></div>
+                                <div class="face face-6"><span class="pip"></span><span class="pip"></span><span
+                                        class="pip"></span><span class="pip"></span><span class="pip"></span><span
+                                        class="pip"></span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="status-banner" id="dice-result">輪到 玩家 1</div>
+
+                    <button id="roll-btn" class="roll-btn">
+                        <span>🎲 擲骰前進</span>
+                    </button>
+                </div>
+
+                <!-- 獨立棋子動畫圖層 -->
+                <div class="token-layer" id="token-layer"></div>
+            </div>
+        </section>
+
+        <!-- 右側：美食推薦與過路費評論牆 -->
+        <aside class="checkin-wall">
+            <div class="wall-header">
+                <h2>💬 美食推薦與過路費牆</h2>
+                <span class="count-badge" id="checkin-count">0 筆</span>
+            </div>
+            <div id="feed-list" class="feed-list">
+                <div class="empty-state">
+                    <div class="empty-emoji">🍽️</div>
+                    <p>從右下角 GO 出發，留下美食推薦搶地盤！</p>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- 互動彈窗（買地推薦 / 過路費評論 / 角落休息格） -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div id="modal-box" class="modal-box">
+            <div class="modal-hero" id="modal-hero">🍜</div>
+            <span id="modal-badge" class="badge">佔領地盤</span>
+            <h3 id="modal-title">日式拉麵</h3>
+            <p id="modal-desc">填寫推薦餐點與評論即可佔領！</p>
+
+            <form id="checkin-form" class="checkin-form hidden">
+                <input type="text" id="food-name" placeholder="🍽️ 推薦店名與餐點（例：一蘭拉麵 - 豚骨拉麵）" required>
+                <textarea id="food-comment" rows="3" placeholder="💬 寫下你的真實評論或推薦理由..." required></textarea>
+
+                <div class="modal-actions">
+                    <button type="button" id="skip-btn" class="secondary-btn">先路過</button>
+                    <button type="submit" class="roll-btn">送出推薦</button>
+                </div>
+            </form>
+
+            <div id="event-actions" class="modal-actions hidden">
+                <button type="button" id="confirm-event-btn" class="roll-btn">太棒了！</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js" defer></script>
+</body>
+
+</html>

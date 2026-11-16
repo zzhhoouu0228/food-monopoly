@@ -1,0 +1,767 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(circle at top, #1e293b 0%, #090d16 100%);
+    color: #f8fafc;
+    min-height: 100dvh;
+    padding: clamp(10px, 2vw, 18px);
+    overflow-x: hidden;
+}
+
+button {
+    touch-action: manipulation;
+}
+
+#fx-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999;
+}
+
+/* 頂部深色玻璃導覽列 */
+.top-bar {
+    max-width: 1200px;
+    margin: 0 auto clamp(12px, 2vw, 16px);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    background: rgba(30, 41, 59, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px clamp(12px, 2.5vw, 20px);
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo-icon {
+    font-size: clamp(22px, 4vw, 28px);
+}
+
+.brand h1 {
+    font-size: clamp(18px, 3.5vw, 22px);
+    font-weight: 900;
+    color: #fbbf24;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 10px rgba(251, 191, 36, 0.25);
+}
+
+.header-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.icon-btn {
+    background: #334155;
+    color: #f1f5f9;
+    border: 1px solid #475569;
+    padding: 6px clamp(10px, 2vw, 14px);
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: clamp(12px, 2.2vw, 13px);
+    cursor: pointer;
+    transition: transform 0.15s, background 0.2s;
+}
+
+.icon-btn:hover {
+    background: #475569;
+    transform: translateY(-1px);
+}
+
+.icon-btn.danger:hover {
+    background: #7f1d1d;
+    border-color: #ef4444;
+    color: #fecaca;
+}
+
+/* 主遊戲區 */
+.game-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(16px, 2.5vw, 24px);
+    justify-content: center;
+    align-items: flex-start;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.board-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+/* 經典大富翁 7x7 深色棋盤 */
+.board {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.45fr repeat(5, 1fr) 1.45fr;
+    grid-template-rows: 1.45fr repeat(5, 1fr) 1.45fr;
+    gap: 2px;
+    width: min(95vw, 680px);
+    aspect-ratio: 1 / 1;
+    background: #020617;
+    border: clamp(5px, 1.2vw, 10px) solid #020617;
+    border-radius: clamp(10px, 2vw, 16px);
+    box-shadow: 0 25px 55px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* 深色棋盤單格 */
+.tile {
+    background: #1e293b;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.tile.side-bottom {
+    flex-direction: column;
+}
+
+.tile.side-top {
+    flex-direction: column-reverse;
+}
+
+.tile.side-left {
+    flex-direction: row-reverse;
+}
+
+.tile.side-right {
+    flex-direction: row;
+}
+
+/* 內向地產色條 */
+.tile-color-bar {
+    flex-shrink: 0;
+}
+
+.side-bottom .tile-color-bar,
+.side-top .tile-color-bar {
+    width: 100%;
+    height: clamp(8px, 1.8vw, 15px);
+    border-bottom: 1.5px solid #020617;
+}
+
+.side-top .tile-color-bar {
+    border-bottom: none;
+    border-top: 1.5px solid #020617;
+}
+
+.side-left .tile-color-bar,
+.side-right .tile-color-bar {
+    height: 100%;
+    width: clamp(8px, 1.8vw, 15px);
+    border-left: 1.5px solid #020617;
+}
+
+.side-right .tile-color-bar {
+    border-left: none;
+    border-right: 1.5px solid #020617;
+}
+
+.tile-body {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    gap: 2px;
+}
+
+.tile-icon {
+    font-size: clamp(14px, 3.2vw, 24px);
+    line-height: 1;
+}
+
+.tile-name {
+    font-weight: 800;
+    font-size: clamp(8px, 1.55vw, 11.5px);
+    color: #f1f5f9;
+    text-align: center;
+    line-height: 1.15;
+    word-break: keep-all;
+}
+
+/* 4 個加大角落格 */
+.tile.side-corner {
+    background: #273549;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.tile.side-corner .tile-icon {
+    font-size: clamp(20px, 4.4vw, 34px);
+}
+
+.tile.side-corner .tile-name {
+    font-size: clamp(9px, 1.8vw, 13px);
+    font-weight: 900;
+    color: #fde047;
+}
+
+/* 右下角起點 GO */
+.tile.corner-go {
+    background: #3b1722;
+}
+
+.go-arrow {
+    color: #f87171;
+    font-weight: 900;
+    font-size: clamp(10px, 2vw, 15px);
+    line-height: 1;
+}
+
+/* 踩中格子的金黃發光波紋 */
+.tile.tile-landed {
+    animation: tilePulse 0.65s ease-out;
+    background-color: #451a03;
+    z-index: 4;
+}
+
+/* 蓋章佔領旗幟 */
+.owner-stamp {
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-4deg);
+    padding: 1px 5px;
+    border-radius: 4px;
+    color: #fff;
+    font-size: clamp(7px, 1.3vw, 9.5px);
+    font-weight: 900;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55);
+    animation: stampSlam 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 3;
+}
+
+/* 棋子動畫層 */
+.token-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 15;
+}
+
+.player-token {
+    position: absolute;
+    width: clamp(18px, 3.6vw, 28px);
+    height: clamp(18px, 3.6vw, 28px);
+    border-radius: 50%;
+    border: 2px solid #f8fafc;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(9px, 1.8vw, 12px);
+    font-weight: 900;
+    color: white;
+    transform: translate(-50%, -50%);
+    transition: left 0.24s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.player-token.hopping {
+    animation: tokenHop 0.24s ease-in-out;
+}
+
+/* 深邃祖母綠中央區 */
+.center-hub {
+    grid-area: 2 / 2 / 7 / 7;
+    background: radial-gradient(circle, #064e3b 0%, #022c22 100%);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    padding: clamp(10px, 2.5vw, 24px);
+    overflow: hidden;
+}
+
+/* 斜向大富翁商標浮水印 */
+.board-watermark {
+    position: absolute;
+    font-size: clamp(26px, 6.2vw, 52px);
+    font-weight: 900;
+    letter-spacing: 4px;
+    color: rgba(52, 211, 153, 0.12);
+    border: 3px solid rgba(52, 211, 153, 0.12);
+    padding: 4px 16px;
+    border-radius: 12px;
+    transform: rotate(-28deg);
+    pointer-events: none;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.player-turn-bar,
+.dice-stage,
+.status-banner,
+.roll-btn {
+    position: relative;
+    z-index: 2;
+}
+
+.player-turn-bar {
+    display: flex;
+    gap: clamp(4px, 1vw, 8px);
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.player-pill {
+    padding: clamp(3px, 0.7vw, 6px) clamp(8px, 1.8vw, 14px);
+    border-radius: 99px;
+    font-size: clamp(10px, 2vw, 13px);
+    font-weight: 800;
+    color: white;
+    opacity: 0.4;
+    transition: all 0.3s;
+}
+
+.player-pill.active {
+    opacity: 1;
+    transform: scale(1.1);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+}
+
+/* 自適應 3D 雙骰舞台 */
+.dice-stage {
+    --dice-size: clamp(34px, 7.5vw, 62px);
+    --half-size: calc(var(--dice-size) / 2);
+    display: flex;
+    gap: clamp(16px, 4vw, 30px);
+    padding: 4px;
+}
+
+.scene {
+    width: var(--dice-size);
+    height: var(--dice-size);
+    perspective: 600px;
+}
+
+.cube {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.85s cubic-bezier(0.2, 0.85, 0.3, 1.05);
+}
+
+.face {
+    position: absolute;
+    width: var(--dice-size);
+    height: var(--dice-size);
+    background: linear-gradient(145deg, #f8fafc, #cbd5e1);
+    border: 1.5px solid #94a3b8;
+    border-radius: clamp(7px, 1.8vw, 12px);
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.15);
+    display: grid;
+    padding: clamp(5px, 1.4vw, 10px);
+}
+
+.pip {
+    width: clamp(5px, 1.3vw, 10px);
+    height: clamp(5px, 1.3vw, 10px);
+    border-radius: 50%;
+    background: #0f172a;
+    align-self: center;
+    justify-self: center;
+}
+
+.face-1 .pip,
+.face-4 .pip {
+    background: #dc2626;
+}
+
+.face-1 {
+    transform: rotateY(0deg) translateZ(var(--half-size));
+}
+
+.face-1 .pip {
+    width: clamp(8px, 2vw, 15px);
+    height: clamp(8px, 2vw, 15px);
+}
+
+.face-6 {
+    transform: rotateY(180deg) translateZ(var(--half-size));
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.face-3 {
+    transform: rotateY(90deg) translateZ(var(--half-size));
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.face-3 .pip:nth-child(1) {
+    align-self: start;
+}
+
+.face-3 .pip:nth-child(3) {
+    align-self: end;
+}
+
+.face-4 {
+    transform: rotateY(-90deg) translateZ(var(--half-size));
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.face-2 {
+    transform: rotateX(90deg) translateZ(var(--half-size));
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.face-5 {
+    transform: rotateX(-90deg) translateZ(var(--half-size));
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+}
+
+.face-5 .pip:nth-child(1) {
+    grid-area: 1 / 1;
+}
+
+.face-5 .pip:nth-child(2) {
+    grid-area: 1 / 3;
+}
+
+.face-5 .pip:nth-child(3) {
+    grid-area: 2 / 2;
+}
+
+.face-5 .pip:nth-child(4) {
+    grid-area: 3 / 1;
+}
+
+.face-5 .pip:nth-child(5) {
+    grid-area: 3 / 3;
+}
+
+.status-banner {
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(52, 211, 153, 0.28);
+    padding: clamp(5px, 1.1vw, 7px) clamp(12px, 2.5vw, 18px);
+    border-radius: 99px;
+    font-weight: 800;
+    font-size: clamp(11px, 2.4vw, 15px);
+    color: #6ee7b7;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    max-width: 94%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.roll-btn {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: white;
+    border: none;
+    padding: clamp(8px, 1.8vw, 13px) clamp(16px, 3.8vw, 28px);
+    font-size: clamp(12px, 2.6vw, 16px);
+    font-weight: 800;
+    border-radius: clamp(10px, 2vw, 14px);
+    cursor: pointer;
+    box-shadow: 0 4px 0 #9a3412, 0 8px 20px rgba(234, 88, 12, 0.4);
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.roll-btn:active:not(:disabled) {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #9a3412;
+}
+
+.roll-btn:disabled {
+    background: #475569;
+    color: #94a3b8;
+    box-shadow: 0 3px 0 #334155;
+    cursor: not-allowed;
+}
+
+.secondary-btn {
+    background: #334155;
+    color: #e2e8f0;
+    border: 1px solid #475569;
+    padding: 10px 16px;
+    font-weight: 700;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+/* 右側深色推薦牆 */
+.checkin-wall {
+    flex: 1;
+    min-width: 300px;
+    max-width: 440px;
+    height: 680px;
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: clamp(16px, 3vw, 22px);
+    padding: clamp(14px, 2.5vw, 20px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+    display: flex;
+    flex-direction: column;
+}
+
+.wall-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #334155;
+    margin-bottom: 14px;
+}
+
+.wall-header h2 {
+    font-size: clamp(16px, 2.8vw, 18px);
+    font-weight: 800;
+    color: #f8fafc;
+}
+
+.count-badge {
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    padding: 3px 10px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.feed-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.empty-state {
+    margin: auto;
+    padding: 24px 0;
+    text-align: center;
+    color: #94a3b8;
+}
+
+.empty-emoji {
+    font-size: 42px;
+    margin-bottom: 8px;
+}
+
+.feed-card {
+    border: 1px solid #334155;
+    border-radius: 14px;
+    padding: 14px;
+    background: #0f172a;
+    color: #e2e8f0;
+    animation: slideInCard 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.feed-comment {
+    margin-top: 8px;
+    padding: 8px 10px;
+    background: rgba(30, 41, 59, 0.85);
+    border-left: 3px solid #f97316;
+    border-radius: 6px;
+    font-size: 13.5px;
+    color: #cbd5e1;
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+/* 深色互動彈窗 */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.78);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 100;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.modal-box {
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: #f8fafc;
+    padding: clamp(18px, 4vw, 26px);
+    border-radius: 24px;
+    width: 100%;
+    max-width: 400px;
+    max-height: 90dvh;
+    overflow-y: auto;
+    text-align: center;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.65);
+    animation: modalPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-hero {
+    font-size: clamp(42px, 10vw, 54px);
+    margin-bottom: 6px;
+}
+
+.badge {
+    display: inline-block;
+    background: rgba(249, 115, 22, 0.18);
+    color: #fb923c;
+    border: 1px solid rgba(249, 115, 22, 0.35);
+    font-size: 12px;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 99px;
+    margin-bottom: 8px;
+}
+
+.modal-box h3 {
+    font-size: clamp(19px, 4.5vw, 22px);
+    margin-bottom: 6px;
+    color: #ffffff;
+}
+
+.modal-box p {
+    font-size: 14px;
+    color: #cbd5e1;
+}
+
+.checkin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.checkin-form input[type="text"],
+.checkin-form textarea {
+    padding: 12px;
+    background: #0f172a;
+    color: #f8fafc;
+    border: 2px solid #334155;
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.checkin-form input[type="text"]::placeholder,
+.checkin-form textarea::placeholder {
+    color: #64748b;
+}
+
+.checkin-form input[type="text"]:focus,
+.checkin-form textarea:focus {
+    outline: none;
+    border-color: #f97316;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+/* 平板直向與手機版面斷點 */
+@media (max-width: 1024px) {
+    .checkin-wall {
+        width: min(95vw, 680px);
+        max-width: none;
+        height: auto;
+        max-height: 460px;
+    }
+}
+
+/* 關鍵影格動畫 */
+@keyframes tokenHop {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    50% {
+        transform: translate(-50%, -115%) scale(1.28);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+@keyframes tilePulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.75);
+    }
+
+    50% {
+        transform: scale(1.06);
+        box-shadow: 0 0 0 12px rgba(251, 191, 36, 0);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes stampSlam {
+    0% {
+        transform: translateX(-50%) scale(2.8) rotate(-25deg);
+        opacity: 0;
+    }
+
+    70% {
+        transform: translateX(-50%) scale(0.9) rotate(-2deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(-50%) scale(1) rotate(-4deg);
+        opacity: 1;
+    }
+}
+
+@keyframes modalPop {
+    0% {
+        transform: scale(0.75);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInCard {
+    0% {
+        transform: translateY(-16px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
