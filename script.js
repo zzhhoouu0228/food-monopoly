@@ -1,51 +1,124 @@
-// 1. 經典大富翁 24 格順時針路徑（淡江大學周邊美食店家）
+// 1. 8x8 環狀 28 格（20 間淡江店家 + 4 角落 + 四邊中段各 1 格機會/命運，彼此間隔 7 格）
 const boardData = [
   // 右下角落：起點 GO
-  { id: 0, name: "起點 GO", icon: "🚩", type: "special", side: "corner", isGo: true, grid: "7 / 7" },
+  { id: 0, name: "起點 GO", icon: "🚩", type: "special", side: "corner", isGo: true, grid: "8 / 8" },
 
-  // 下排（由右往左）：棕色組 & 淺藍組
-  { id: 1, name: "欣宏牛肉麵", icon: "🍜", type: "restaurant", side: "bottom", color: "#8b5a2b", grid: "7 / 6" },
-  { id: 2, name: "樂之屋", icon: "🍱", type: "restaurant", side: "bottom", color: "#8b5a2b", grid: "7 / 5" },
-  { id: 3, name: "宵夜500", icon: "🌙", type: "restaurant", side: "bottom", color: "#38bdf8", grid: "7 / 4" },
-  { id: 4, name: "滷獲至飽", icon: "🍲", type: "restaurant", side: "bottom", color: "#38bdf8", grid: "7 / 3" },
-  { id: 5, name: "海盜灣漢堡", icon: "🍔", type: "restaurant", side: "bottom", color: "#38bdf8", grid: "7 / 2" },
+  // 下排（由右往左，共 6 格）
+  { id: 1, name: "欣宏牛肉麵", icon: "🍜", type: "restaurant", side: "bottom", color: "#8b5a2b", grid: "8 / 7" },
+  { id: 2, name: "樂之屋", icon: "🍱", type: "restaurant", side: "bottom", color: "#8b5a2b", grid: "8 / 6" },
+  { id: 3, name: "機會", icon: "❓", type: "chance", side: "bottom", grid: "8 / 5" },
+  { id: 4, name: "滷獲至飽", icon: "🍲", type: "restaurant", side: "bottom", color: "#8b5a2b", grid: "8 / 4" },
+  { id: 5, name: "丐幫滷味", icon: "🍢", type: "restaurant", side: "bottom", color: "#38bdf8", grid: "8 / 3" },
+  { id: 6, name: "海盜灣漢堡", icon: "🍔", type: "restaurant", side: "bottom", color: "#38bdf8", grid: "8 / 2" },
 
   // 左下角落
-  { id: 6, name: "大學城廣場", icon: "🤤", type: "special", side: "corner", grid: "7 / 1" },
+  { id: 7, name: "大學城廣場", icon: "🤤", type: "special", side: "corner", grid: "8 / 1" },
 
-  // 左排（由下往上）：粉紅組 & 橘色組
-  { id: 7, name: "eat 窩", icon: "🍝", type: "restaurant", side: "left", color: "#ec4899", grid: "6 / 1" },
-  { id: 8, name: "滄洲燒臘飯", icon: "🍖", type: "restaurant", side: "left", color: "#ec4899", grid: "5 / 1" },
-  { id: 9, name: "牛狀元牛排", icon: "🥩", type: "restaurant", side: "left", color: "#f97316", grid: "4 / 1" },
-  { id: 10, name: "無名蒸餃", icon: "🥟", type: "restaurant", side: "left", color: "#f97316", grid: "3 / 1" },
-  { id: 11, name: "呷呼飽", icon: "🍚", type: "restaurant", side: "left", color: "#f97316", grid: "2 / 1" },
+  // 左排（由下往上，共 6 格）
+  { id: 8, name: "eat 窩", icon: "🍝", type: "restaurant", side: "left", color: "#38bdf8", grid: "7 / 1" },
+  { id: 9, name: "滄洲燒臘飯", icon: "🍖", type: "restaurant", side: "left", color: "#ec4899", grid: "6 / 1" },
+  { id: 10, name: "命運", icon: "🔮", type: "fate", side: "left", grid: "5 / 1" },
+  { id: 11, name: "八方雲集", icon: "🥟", type: "restaurant", side: "left", color: "#ec4899", grid: "4 / 1" },
+  { id: 12, name: "三顧茅廬", icon: "🌶️", type: "restaurant", side: "left", color: "#ec4899", grid: "3 / 1" },
+  { id: 13, name: "水源街炒飯", icon: "🍳", type: "restaurant", side: "left", color: "#f97316", grid: "2 / 1" },
 
   // 左上角落
-  { id: 12, name: "i 珍食", icon: "🎪", type: "special", side: "corner", grid: "1 / 1" },
+  { id: 14, name: "i 珍食", icon: "🍙", type: "special", side: "corner", grid: "1 / 1" },
 
-  // 上排（由左往右）：紅色組 & 黃色組
-  { id: 13, name: "大塊雞排", icon: "🍗", type: "restaurant", side: "top", color: "#ef4444", grid: "1 / 2" },
-  { id: 14, name: "黑殿排骨飯", icon: "🍛", type: "restaurant", side: "top", color: "#ef4444", grid: "1 / 3" },
-  { id: 15, name: "文化阿給", icon: "🥡", type: "restaurant", side: "top", color: "#eab308", grid: "1 / 4" },
-  { id: 16, name: "金雞母關東煮", icon: "🍢", type: "restaurant", side: "top", color: "#eab308", grid: "1 / 5" },
-  { id: 17, name: "原味豆花", icon: "🍧", type: "restaurant", side: "top", color: "#eab308", grid: "1 / 6" },
+  // 上排（由左往右，共 6 格）
+  { id: 15, name: "牛狀元牛排", icon: "🥩", type: "restaurant", side: "top", color: "#f97316", grid: "1 / 2" },
+  { id: 16, name: "無名煎餃", icon: "🥟", type: "restaurant", side: "top", color: "#f97316", grid: "1 / 3" },
+  { id: 17, name: "機會", icon: "❓", type: "chance", side: "top", grid: "1 / 4" },
+  { id: 18, name: "大塊雞排", icon: "🍗", type: "restaurant", side: "top", color: "#ef4444", grid: "1 / 5" },
+  { id: 19, name: "淡大麥當勞", icon: "🍟", type: "restaurant", side: "top", color: "#ef4444", grid: "1 / 6" },
+  { id: 20, name: "孫東寶牛排", icon: "🥩", type: "restaurant", side: "top", color: "#ef4444", grid: "1 / 7" },
 
   // 右上角落
-  { id: 18, name: "英專路夜市", icon: "🏮", type: "special", side: "corner", grid: "1 / 7" },
+  { id: 21, name: "英專路夜市", icon: "🏮", type: "special", side: "corner", grid: "1 / 8" },
 
-  // 右排（由上往下）：綠色組 & 深藍高級地段組
-  { id: 19, name: "極鮮火鍋", icon: "🍲", type: "restaurant", side: "right", color: "#10b981", grid: "2 / 7" },
-  { id: 20, name: "淡江滷味王", icon: "🥘", type: "restaurant", side: "right", color: "#10b981", grid: "3 / 7" },
-  { id: 21, name: "北新路咖哩", icon: "🍛", type: "restaurant", side: "right", color: "#1d4ed8", grid: "4 / 7" },
-  { id: 22, name: "宮燈大道咖啡", icon: "☕", type: "restaurant", side: "right", color: "#1d4ed8", grid: "5 / 7" },
-  { id: 23, name: "淡水老街魚丸", icon: "🥣", type: "restaurant", side: "right", color: "#1d4ed8", grid: "6 / 7" }
+  // 右排（由上往下，共 6 格）
+  { id: 22, name: "黑殿排骨飯", icon: "🍛", type: "restaurant", side: "right", color: "#eab308", grid: "2 / 8" },
+  { id: 23, name: "文化阿給", icon: "🥡", type: "restaurant", side: "right", color: "#eab308", grid: "3 / 8" },
+  { id: 24, name: "命運", icon: "🔮", type: "fate", side: "right", grid: "4 / 8" },
+  { id: 25, name: "北新路咖哩", icon: "🍛", type: "restaurant", side: "right", color: "#10b981", grid: "5 / 8" },
+  { id: 26, name: "喜相逢快餐", icon: "🍱", type: "restaurant", side: "right", color: "#10b981", grid: "6 / 8" },
+  { id: 27, name: "源味滷肉飯", icon: "🍚", type: "restaurant", side: "right", color: "#10b981", grid: "7 / 8" }
 ];
 
-// ==========================================
-// LocalStorage 完整狀態持久化（玩家位置 + 輪次 + 評論）
-// ==========================================
+// 機會卡庫（抽完後一定會繼續移動或再骰一次選出餐廳）
+const chanceCards = [
+  {
+    icon: "🚀",
+    title: "練球順風快步走",
+    desc: "今天體能狀態極佳！棋子自動再往前推進 2 格決定餐廳！",
+    moveSteps: 2,
+    actionText: "⚡ 前進 2 格"
+  },
+  {
+    icon: "🥤",
+    title: "飲料加碼大對決",
+    desc: "本輪同桌一起猜拳，最輸的人請大家喝飲料！接下任務後繼續擲骰決定要吃哪間店！",
+    keepTurnTask: "🥤 猜拳輸家請喝飲料"
+  },
+  {
+    icon: "👑",
+    title: "今日晚餐總召權",
+    desc: "獲得「指定鄰居權」！請直接從下方選擇【前一格】或【後一格】的餐廳開吃！",
+    chooseNeighbor: true
+  },
+  {
+    icon: "🎲",
+    title: "命運重抽通行證",
+    desc: "獲得一次無條件免費重擲骰子的機會，繼續骰出你的晚餐吧！",
+    reroll: true,
+    actionText: "🎲 立即再骰一次"
+  },
+  {
+    icon: "🥟",
+    title: "小菜升級特權",
+    desc: "今天點餐可任選一道小菜或湯品，由同桌猜拳最輸的人買單！接著擲骰決定餐廳！",
+    keepTurnTask: "🥟 猜拳輸家請小菜"
+  }
+];
+
+// 命運卡庫（抽完後一定會繼續移動或再骰一次選出餐廳）
+const fateCards = [
+  {
+    icon: "⏪",
+    title: "球拍忘在球場啦！",
+    desc: "折返跑回球場拿裝備！棋子往後退 2 格決定餐廳！",
+    moveSteps: -2,
+    actionText: "🏃 往後退 2 格"
+  },
+  {
+    icon: "💸",
+    title: "月底吃土警戒線",
+    desc: "本餐個人預算限制在 100 元以內，點超過的人要幫大家拿餐具！接下任務後繼續擲骰選餐廳！",
+    keepTurnTask: "💸 個人預算百元內"
+  },
+  {
+    icon: "⚡",
+    title: "肚子餓到狂奔",
+    desc: "練完球血糖過低！棋子直接往前衝刺 3 格搶位子！",
+    moveSteps: 3,
+    actionText: "⚡ 衝刺 3 格"
+  },
+  {
+    icon: "🌶️",
+    title: "嗜辣勇者試煉",
+    desc: "今天的餐點或沾醬必須加辣（至少微辣）！接下任務後繼續擲骰決定餐廳！",
+    keepTurnTask: "🌶️ 餐點必須加辣"
+  },
+  {
+    icon: "🤝",
+    title: "共享美食家任務",
+    desc: "必須與右邊的隊友點不同的主餐並交換試吃！接下任務後繼續擲骰決定餐廳！",
+    keepTurnTask: "🤝 與隊友交換試吃"
+  }
+];
+
 const REVIEWS_KEY = "tku_food_monopoly_reviews_v1";
-const GAME_STATE_KEY = "tku_food_monopoly_state_v2";
+const GAME_STATE_KEY = "tku_food_monopoly_state_v4";
 const playerColors = ["#ef4444", "#2563eb", "#059669", "#7c3aed"];
 
 function createDefaultPlayers() {
@@ -58,24 +131,40 @@ function createDefaultPlayers() {
 let players = createDefaultPlayers();
 let currentPlayerIdx = 0;
 let reviewRecords = [];
-let activeTab = "store"; // "store" | "all"
+let activeTab = "store";
 let selectedStoreId = "all";
 let isMoving = false;
 let rollCounter = 0;
 let posBeforeRoll = 0;
+let pendingEventEffect = null;
+let activePlayerTasks = {};
 
 function loadAllData() {
   try {
     const rawReviews = localStorage.getItem(REVIEWS_KEY);
-    if (rawReviews) reviewRecords = JSON.parse(rawReviews);
+    if (rawReviews) {
+      const parsed = JSON.parse(rawReviews);
+      if (Array.isArray(parsed)) {
+        reviewRecords = parsed.map(rec => {
+          const matchedTile = boardData.find(t => t.type === "restaurant" && t.name === rec.storeName);
+          if (matchedTile) rec.tileId = matchedTile.id;
+          return rec;
+        });
+      }
+    }
 
     const rawState = localStorage.getItem(GAME_STATE_KEY);
     if (rawState) {
       const state = JSON.parse(rawState);
       if (Array.isArray(state.players) && state.players.length >= 1) {
-        players = state.players;
+        players = state.players.map((p, idx) => ({
+          id: typeof p.id === "number" ? p.id : idx,
+          name: p.name || `玩家 ${idx + 1}`,
+          color: p.color || playerColors[idx % playerColors.length],
+          pos: typeof p.pos === "number" && p.pos >= 0 && p.pos < boardData.length ? p.pos : 0
+        }));
       }
-      if (typeof state.currentPlayerIdx === "number" && state.currentPlayerIdx < players.length) {
+      if (typeof state.currentPlayerIdx === "number" && state.currentPlayerIdx >= 0 && state.currentPlayerIdx < players.length) {
         currentPlayerIdx = state.currentPlayerIdx;
       }
     }
@@ -89,13 +178,10 @@ function saveReviews() {
 }
 
 function saveGameState() {
-  localStorage.setItem(GAME_STATE_KEY, JSON.stringify({
-    players,
-    currentPlayerIdx
-  }));
+  localStorage.setItem(GAME_STATE_KEY, JSON.stringify({ players, currentPlayerIdx }));
 }
 
-// 2. 全螢幕彩帶特效系統
+// 彩帶特效
 const fxCanvas = document.getElementById("fx-canvas");
 const fxCtx = fxCanvas.getContext("2d");
 let particles = [];
@@ -141,7 +227,7 @@ function animateConfetti() {
 }
 animateConfetti();
 
-// 3. 3D 六面骰 (D6) 1~6 點對應的正面旋轉角度
+// 3D 六面骰角度
 const faceRotations = {
   1: { x: 0, y: 0 },
   2: { x: -90, y: 0 },
@@ -162,7 +248,12 @@ function initGame() {
 
   boardData.forEach(tile => {
     const div = document.createElement("div");
-    div.className = `tile side-${tile.side} ${tile.isGo ? "corner-go" : ""}`;
+    let extraClass = "";
+    if (tile.isGo) extraClass = "corner-go";
+    if (tile.type === "chance") extraClass = "tile-chance";
+    if (tile.type === "fate") extraClass = "tile-fate";
+
+    div.className = `tile side-${tile.side} ${extraClass}`.trim();
     div.id = `tile-${tile.id}`;
     div.style.gridArea = tile.grid;
 
@@ -176,9 +267,7 @@ function initGame() {
           <div class="tile-name">${tile.name}</div>
         </div>
       `;
-      div.addEventListener("click", () => {
-        switchToStoreReviews(String(tile.id));
-      });
+      div.addEventListener("click", () => switchToStoreReviews(String(tile.id)));
 
       const opt1 = document.createElement("option");
       opt1.value = String(tile.id);
@@ -209,7 +298,12 @@ function initGame() {
 }
 
 function updateTurnBanner() {
-  document.getElementById("dice-result").textContent = `輪到 ${players[currentPlayerIdx].name}`;
+  const player = players[currentPlayerIdx];
+  const task = activePlayerTasks[player.id];
+  const bannerEl = document.getElementById("dice-result");
+  bannerEl.textContent = task
+    ? `輪到 ${player.name}（${task}）`
+    : `輪到 ${player.name}`;
 }
 
 function renderPlayerStatus() {
@@ -279,7 +373,7 @@ function positionAllTokens(animateHop = false) {
   });
 }
 
-// 4. 擲 3D 六面骰 (1~6) 與移動
+// 擲骰與移動
 const rollBtn = document.getElementById("roll-btn");
 rollBtn.addEventListener("click", async () => {
   if (isMoving) return;
@@ -308,30 +402,51 @@ function spin3DDice(cubeId, targetFace, spinSeed) {
 }
 
 async function movePlayerSteps(player, steps) {
-  for (let i = 0; i < steps; i++) {
-    player.pos = (player.pos + 1) % boardData.length;
+  const stepDir = steps >= 0 ? 1 : -1;
+  const absSteps = Math.abs(steps);
+
+  for (let i = 0; i < absSteps; i++) {
+    player.pos = (player.pos + stepDir + boardData.length) % boardData.length;
     positionAllTokens(true);
-    await new Promise(r => setTimeout(r, 240));
+    await new Promise(r => setTimeout(r, 220));
   }
 
   const landedTile = document.getElementById(`tile-${player.pos}`);
-  landedTile.classList.remove("tile-landed");
-  void landedTile.offsetWidth;
-  landedTile.classList.add("tile-landed");
+  if (landedTile) {
+    landedTile.classList.remove("tile-landed");
+    void landedTile.offsetWidth;
+    landedTile.classList.add("tile-landed");
+  }
 }
 
-// 5. 踩點彈窗：顯示店家點餐攻略並定案今日晚餐
+// 踩點事件處理（確保機會/命運之後一定能繼續決定餐廳）
 function handleLanding(player) {
   const tile = boardData[player.pos];
+  const badgeEl = document.getElementById("decision-badge");
   const previewEl = document.getElementById("decision-preview");
+  const rerollBtn = document.getElementById("reroll-btn");
+  const eventActionBtn = document.getElementById("event-action-btn");
+  const confirmBtn = document.getElementById("confirm-eat-btn");
+  const actionsEl = document.querySelector("#decision-modal .modal-actions");
 
-  document.getElementById("decision-hero").textContent = tile.icon;
-  document.getElementById("decision-title").textContent = tile.name;
+  actionsEl.querySelectorAll(".dynamic-event-btn").forEach(btn => btn.remove());
+  badgeEl.className = "badge";
+  rerollBtn.classList.remove("hidden");
+  eventActionBtn.classList.add("hidden");
+  confirmBtn.classList.remove("hidden");
+  pendingEventEffect = null;
+
+  const activeTask = activePlayerTasks[player.id];
 
   if (tile.type === "restaurant") {
     switchToStoreReviews(String(tile.id));
-    document.getElementById("decision-badge").textContent = `🎯 ${player.name} 抽中今日晚餐`;
-    document.getElementById("decision-desc").textContent = "路上先看看隊友推薦點什麼，確認後就出發開吃！";
+    document.getElementById("decision-hero").textContent = tile.icon;
+    badgeEl.textContent = `🎯 ${player.name} 抽中今日晚餐`;
+    document.getElementById("decision-title").textContent = tile.name;
+    document.getElementById("decision-desc").textContent = activeTask
+      ? `別忘了身上任務【${activeTask}】！看看隊友推薦點什麼就出發！`
+      : "路上先看看隊友推薦點什麼，確認後就出發開吃！";
+    confirmBtn.textContent = "🎉 就吃這家！（換下一位）";
 
     const storeReviews = reviewRecords.filter(r => String(r.tileId) === String(tile.id));
     if (storeReviews.length > 0) {
@@ -360,16 +475,103 @@ function handleLanding(player) {
       `;
     }
     previewEl.classList.remove("hidden");
+  } else if (tile.type === "chance" || tile.type === "fate") {
+    const isChance = tile.type === "chance";
+    const deck = isChance ? chanceCards : fateCards;
+    const card = deck[Math.floor(Math.random() * deck.length)];
+
+    document.getElementById("decision-hero").textContent = card.icon;
+    badgeEl.textContent = isChance ? `❓ ${player.name} 抽中【機會卡】` : `🔮 ${player.name} 抽中【命運卡】`;
+    badgeEl.classList.add(isChance ? "chance-badge" : "fate-badge");
+    document.getElementById("decision-title").textContent = card.title;
+    document.getElementById("decision-desc").textContent = card.desc;
+    previewEl.classList.add("hidden");
+
+    rerollBtn.classList.add("hidden");
+    confirmBtn.classList.add("hidden");
+
+    if (card.chooseNeighbor) {
+      const prevIdx = (player.pos - 1 + boardData.length) % boardData.length;
+      const nextIdx = (player.pos + 1) % boardData.length;
+      const prevTile = boardData[prevIdx];
+      const nextTile = boardData[nextIdx];
+
+      const prevBtn = document.createElement("button");
+      prevBtn.type = "button";
+      prevBtn.className = "roll-btn dynamic-event-btn";
+      prevBtn.textContent = `⬅️ ${prevTile.icon} ${prevTile.name}`;
+      prevBtn.addEventListener("click", async () => {
+        document.getElementById("decision-modal").classList.add("hidden");
+        await movePlayerSteps(player, -1);
+        handleLanding(player);
+      });
+
+      const nextBtn = document.createElement("button");
+      nextBtn.type = "button";
+      nextBtn.className = "roll-btn dynamic-event-btn";
+      nextBtn.textContent = `➡️ ${nextTile.icon} ${nextTile.name}`;
+      nextBtn.addEventListener("click", async () => {
+        document.getElementById("decision-modal").classList.add("hidden");
+        await movePlayerSteps(player, 1);
+        handleLanding(player);
+      });
+
+      actionsEl.appendChild(prevBtn);
+      actionsEl.appendChild(nextBtn);
+    } else {
+      pendingEventEffect = card;
+      eventActionBtn.textContent = card.actionText || "🎲 接下任務，繼續擲骰選餐廳！";
+      eventActionBtn.classList.remove("hidden");
+    }
   } else {
-    document.getElementById("decision-badge").textContent = "✨ 自由美食特區";
-    document.getElementById("decision-desc").textContent = `恭喜 ${player.name} 獲得「自由選擇權」，今天在【${tile.name}】周邊隨意挑一間吃！`;
+    document.getElementById("decision-hero").textContent = tile.icon;
+    badgeEl.textContent = "✨ 自由美食特區";
+    document.getElementById("decision-title").textContent = tile.name;
+    document.getElementById("decision-desc").textContent = activeTask
+      ? `恭喜 ${player.name} 獲得自由選擇權！記得搭配身上任務【${activeTask}】在周邊挑一間吃！`
+      : `恭喜 ${player.name} 獲得「自由選擇權」，今天在【${tile.name}】周邊隨意挑一間吃！`;
+    confirmBtn.textContent = "🎉 就吃這區！（換下一位）";
     previewEl.classList.add("hidden");
   }
 
   document.getElementById("decision-modal").classList.remove("hidden");
 }
 
+// 執行機會/命運的效果（移動、重擲或接下任務後繼續由同一位玩家擲骰）
+document.getElementById("event-action-btn").addEventListener("click", async () => {
+  const effect = pendingEventEffect;
+  document.getElementById("decision-modal").classList.add("hidden");
+  if (!effect) return;
+
+  const player = players[currentPlayerIdx];
+
+  if (effect.reroll) {
+    isMoving = false;
+    rollBtn.disabled = false;
+    document.getElementById("dice-result").textContent = `${player.name} 獲得免費重擲，再骰一次選餐廳！`;
+    return;
+  }
+
+  if (effect.keepTurnTask) {
+    activePlayerTasks[player.id] = effect.keepTurnTask;
+    isMoving = false;
+    rollBtn.disabled = false;
+    updateTurnBanner();
+    return;
+  }
+
+  if (typeof effect.moveSteps === "number") {
+    const dirText = effect.moveSteps > 0 ? `前進 ${effect.moveSteps} 格` : `後退 ${Math.abs(effect.moveSteps)} 格`;
+    document.getElementById("dice-result").textContent = `${player.name} ${dirText}！`;
+    await movePlayerSteps(player, effect.moveSteps);
+    handleLanding(player);
+  }
+});
+
 document.getElementById("confirm-eat-btn").addEventListener("click", () => {
+  const player = players[currentPlayerIdx];
+  delete activePlayerTasks[player.id];
+
   document.getElementById("decision-modal").classList.add("hidden");
   launchConfetti();
   currentPlayerIdx = (currentPlayerIdx + 1) % players.length;
@@ -387,10 +589,10 @@ document.getElementById("reroll-btn").addEventListener("click", () => {
   document.getElementById("decision-modal").classList.add("hidden");
   isMoving = false;
   rollBtn.disabled = false;
-  document.getElementById("dice-result").textContent = `${player.name} 再重擲一次！`;
+  updateTurnBanner();
 });
 
-// 6. 評論牆 CRUD（新增、讀取、編輯、單則刪除、按讚）
+// 評論牆 CRUD
 const reviewModal = document.getElementById("review-modal");
 const reviewForm = document.getElementById("review-form");
 
@@ -400,7 +602,8 @@ document.getElementById("open-review-btn").addEventListener("click", () => {
   reviewForm.reset();
   document.getElementById("food-score").value = "5";
 
-  const defaultStore = selectedStoreId !== "all" ? selectedStoreId : "1";
+  const firstRestaurant = boardData.find(t => t.type === "restaurant");
+  const defaultStore = selectedStoreId !== "all" ? selectedStoreId : String(firstRestaurant.id);
   document.getElementById("review-store-select").value = defaultStore;
   reviewModal.classList.remove("hidden");
 });
@@ -507,10 +710,13 @@ function renderWall() {
     const tileEl = document.getElementById(`tile-${selectedStoreId}`);
     if (tileEl) tileEl.classList.add("selected-tile");
 
-    filteredRecords = reviewRecords.filter(r => String(r.tileId) === String(selectedStoreId));
     const tile = boardData.find(t => String(t.id) === String(selectedStoreId));
-    titleEl.textContent = `${tile.icon} ${tile.name}`;
-    subtitleEl.textContent = `查看大家給「${tile.name}」的推薦菜色與評分`;
+    filteredRecords = reviewRecords.filter(r => String(r.tileId) === String(selectedStoreId));
+
+    if (tile) {
+      titleEl.textContent = `${tile.icon} ${tile.name}`;
+      subtitleEl.textContent = `查看大家給「${tile.name}」的推薦菜色與評分`;
+    }
 
     if (filteredRecords.length > 0) {
       const avg = (filteredRecords.reduce((sum, r) => sum + Number(r.score), 0) / filteredRecords.length).toFixed(1);
@@ -603,7 +809,21 @@ document.getElementById("category-select").addEventListener("change", (e) => {
   renderWall();
 });
 
-// 7. 頂部控制按鈕（新增玩家 / 減少玩家 / 重置玩家 / 重置棋盤 / 清空評論）
+// 遊戲規則彈窗控制
+const rulesModal = document.getElementById("rules-modal");
+document.getElementById("rules-btn").addEventListener("click", () => {
+  rulesModal.classList.remove("hidden");
+});
+document.getElementById("close-rules-btn").addEventListener("click", () => {
+  rulesModal.classList.add("hidden");
+});
+rulesModal.addEventListener("click", (e) => {
+  if (e.target === rulesModal) {
+    rulesModal.classList.add("hidden");
+  }
+});
+
+// 頂部控制按鈕
 document.getElementById("add-player-btn").addEventListener("click", () => {
   if (isMoving) return;
   if (players.length >= 4) return alert("最多支援 4 位玩家！");
@@ -617,10 +837,9 @@ document.getElementById("add-player-btn").addEventListener("click", () => {
 document.getElementById("remove-player-btn").addEventListener("click", () => {
   if (isMoving) return;
   if (players.length <= 1) return alert("至少需要保留 1 位玩家！");
-  players.pop();
-  if (currentPlayerIdx >= players.length) {
-    currentPlayerIdx = 0;
-  }
+  const removed = players.pop();
+  if (removed) delete activePlayerTasks[removed.id];
+  if (currentPlayerIdx >= players.length) currentPlayerIdx = 0;
   saveGameState();
   renderPlayerStatus();
   renderTokens();
@@ -631,6 +850,7 @@ document.getElementById("reset-players-btn").addEventListener("click", () => {
   if (isMoving) return;
   if (!confirm("確定要將玩家人數與名稱重置為預設的「玩家 1、玩家 2」嗎？（歷史評論會完整保留）")) return;
   players = createDefaultPlayers();
+  activePlayerTasks = {};
   currentPlayerIdx = 0;
   isMoving = false;
   rollBtn.disabled = false;
@@ -643,6 +863,7 @@ document.getElementById("reset-players-btn").addEventListener("click", () => {
 document.getElementById("reset-btn").addEventListener("click", () => {
   if (!confirm("確定要將目前所有棋子退回起點 GO 並從第一位玩家重新開始嗎？（歷史評論會完整保留）")) return;
   players.forEach(p => p.pos = 0);
+  activePlayerTasks = {};
   currentPlayerIdx = 0;
   isMoving = false;
   rollBtn.disabled = false;
@@ -659,11 +880,18 @@ document.getElementById("clear-history-btn").addEventListener("click", () => {
   }
 });
 
-// 監聽棋盤尺寸變化，即時重新對齊棋子座標
-new ResizeObserver(() => {
-  positionAllTokens(false);
-}).observe(document.getElementById("board"));
+// 啟動遊戲
+function startApp() {
+  const boardEl = document.getElementById("board");
+  if (boardEl && typeof ResizeObserver !== "undefined") {
+    new ResizeObserver(() => positionAllTokens(false)).observe(boardEl);
+  }
+  loadAllData();
+  initGame();
+}
 
-// 讀取存檔並啟動遊戲
-loadAllData();
-initGame();
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", startApp);
+} else {
+  startApp();
+}
